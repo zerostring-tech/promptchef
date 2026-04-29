@@ -12,7 +12,7 @@ PromptChef is a free, open-source library of AI prompts and skills maintained by
 
 The goal is simple: make high-quality prompts and skills easy to find, copy, and contribute to.
 
-## How to Contribute
+## How to Contribute 
 
 Adding a prompt or skill is as easy as creating a markdown file and opening a pull request — no coding knowledge needed.
 
