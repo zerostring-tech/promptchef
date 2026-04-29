@@ -1,0 +1,21 @@
+baseURL = "https://your-username.github.io/"
+languageCode = "en-us"
+title = "PromptChef"
+
+[params]
+  description = "A community-driven library of AI prompts and skills"
+  author = "PromptChef Community"
+  github = "https://github.com/your-username/promptchef"
+
+[outputs]
+  home = ["HTML", "JSON"]
+  section = ["HTML"]
+  page = ["HTML"]
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  model = "models"
+
+[markup.goldmark.renderer]
+  unsafe = true

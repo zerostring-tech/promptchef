@@ -1,0 +1,25 @@
+{{ $type := .Type }}
+<article class="card">
+  <a href="{{ .RelPermalink }}" class="card-link">
+    <div class="card-header">
+      <span class="card-type card-type--{{ $type }}">{{ $type | title }}</span>
+      {{ with .Params.difficulty }}
+      <span class="card-difficulty card-difficulty--{{ . }}">{{ . | title }}</span>
+      {{ end }}
+    </div>
+    <h3 class="card-title">{{ .Title }}</h3>
+    <p class="card-description">{{ .Description }}</p>
+    <div class="card-meta">
+      {{ with .Params.tags }}
+      <div class="card-tags">
+        {{ range first 3 . }}<span class="tag">{{ . }}</span>{{ end }}
+      </div>
+      {{ end }}
+      {{ with .Params.models }}
+      <div class="card-models">
+        {{ range first 2 . }}<span class="model-badge">{{ . }}</span>{{ end }}
+      </div>
+      {{ end }}
+    </div>
+  </a>
+</article>

@@ -1,0 +1,134 @@
+{{ define "main" }}
+<div class="container">
+  <div class="single-layout">
+
+    <article class="single-page">
+      <header class="single-header">
+        <div class="single-meta-top">
+          <a href="{{ "/" | relURL }}{{ .Section }}/" class="back-link">&larr; All {{ .Section | title }}</a>
+          <span class="single-type single-type--{{ .Section }}">{{ .Section | title }}</span>
+          {{ with .Params.difficulty }}
+          <span class="card-difficulty card-difficulty--{{ . }}">{{ . | title }}</span>
+          {{ end }}
+        </div>
+        <h1 class="single-title">{{ .Title }}</h1>
+        {{ with .Description }}<p class="single-description">{{ . }}</p>{{ end }}
+        {{ with .Params.models }}
+        <div class="single-meta">
+          <span class="meta-label">Works with:</span>
+          {{ range . }}<span class="model-badge">{{ . }}</span>{{ end }}
+        </div>
+        {{ end }}
+      </header>
+
+      <div class="single-content">
+        {{ .Content }}
+      </div>
+
+      <footer class="single-footer">
+        <a href="{{ .Site.Params.github }}/blob/main/content/{{ .File.Path }}" target="_blank" rel="noopener" class="btn btn--secondary">
+          Edit on GitHub
+        </a>
+        <a href="{{ .Site.Params.github }}/issues/new?title=Feedback: {{ .Title | urlquery }}" target="_blank" rel="noopener" class="btn btn--ghost">
+          Submit feedback
+        </a>
+      </footer>
+    </article>
+
+    <aside class="single-sidebar">
+      <div class="sidebar-card">
+
+        {{ with .Params.source }}
+        <div class="sidebar-field">
+          <span class="sidebar-label">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Source
+          </span>
+          <a href="{{ . }}" target="_blank" rel="noopener" class="sidebar-value sidebar-value--link">
+            {{ . | replaceRE "https?://(github\\.com/[^/]+/[^/]+).*" "$1" }}
+          </a>
+        </div>
+        {{ end }}
+
+        <div class="sidebar-field">
+          <span class="sidebar-label">
+            <i class="fa-solid fa-scale-balanced"></i> Licence
+          </span>
+          <span class="sidebar-value">
+            {{ with .Params.license }}{{ . }}{{ else }}Unknown{{ end }}
+          </span>
+        </div>
+
+        <div class="sidebar-field">
+          <span class="sidebar-label">
+            <i class="fa-regular fa-user"></i> Submitted by
+          </span>
+          <span class="sidebar-value">
+            {{ with .Params.author }}{{ . }}{{ else }}<em>Community</em>{{ end }}
+          </span>
+        </div>
+
+        <div class="sidebar-field">
+          <span class="sidebar-label">
+            <i class="fa-regular fa-calendar"></i> Submitted on
+          </span>
+          <span class="sidebar-value">{{ .Date.Format "Jan 2, 2006" }}</span>
+        </div>
+
+        {{ with .Params.models }}
+        <div class="sidebar-field">
+          <span class="sidebar-label">
+            <i class="fa-solid fa-robot"></i> Models
+          </span>
+          <div class="sidebar-value sidebar-value--badges">
+            {{ range . }}<span class="model-badge">{{ . }}</span>{{ end }}
+          </div>
+        </div>
+        {{ end }}
+
+        {{ with .Params.tags }}
+        <div class="sidebar-field">
+          <span class="sidebar-label">
+            <i class="fa-solid fa-tags"></i> Tags
+          </span>
+          <div class="sidebar-value sidebar-value--badges">
+            {{ range . }}<a href="{{ "/tags/" | relURL }}{{ . | urlize }}/" class="tag">{{ . }}</a>{{ end }}
+          </div>
+        </div>
+        {{ end }}
+
+      </div>
+    </aside>
+
+  </div>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+  const ICON_COPY = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy`;
+  const ICON_DONE = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!`;
+
+  document.querySelectorAll('.single-content pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.innerHTML = ICON_COPY;
+    btn.setAttribute('aria-label', 'Copy code');
+    pre.appendChild(btn);
+
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      const text = (code ? code.innerText : pre.innerText).replace(/Copy$/, '').replace(/Copied!$/, '').trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = ICON_DONE;
+        btn.classList.add('copy-btn--copied');
+        setTimeout(() => {
+          btn.innerHTML = ICON_COPY;
+          btn.classList.remove('copy-btn--copied');
+        }, 2000);
+      });
+    });
+  });
+})();
+</script>
+{{ end }}

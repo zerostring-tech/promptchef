@@ -1,0 +1,31 @@
+<header class="site-header">
+  <div class="container">
+    <a href="{{ "/" | relURL }}" class="site-logo">
+      <img src="{{ "img/logo-normal.png" | relURL }}" class="logo-img logo-img--light" alt="PromptChef" height="40">
+      <img src="{{ "img/logo-dark.png"   | relURL }}" class="logo-img logo-img--dark"  alt="PromptChef" height="40">
+    </a>
+    <div class="nav-divider"></div>
+    <nav class="site-nav">
+      <a href="{{ "/prompts/" | relURL }}" class="{{ if eq .Section "prompts" }}active{{ end }}">
+        <i class="fa-regular fa-comment"></i>
+        Prompts
+      </a>
+      <a href="{{ "/skills/" | relURL }}" class="{{ if eq .Section "skills" }}active{{ end }}">
+        <i class="fa-solid fa-brain"></i>
+        Skills
+      </a>
+      <a href="{{ "/about/" | relURL }}" class="{{ if eq .RelPermalink "/about/" }}active{{ end }}">
+        <i class="fa-solid fa-circle-info"></i>
+        About
+      </a>
+      <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener" class="nav-github">
+        <i class="fa-brands fa-github"></i>
+        GitHub
+      </a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle colour theme" title="Toggle light/dark mode">
+        <i class="icon-sun fa-solid fa-sun"></i>
+        <i class="icon-moon fa-solid fa-moon"></i>
+      </button>
+    </nav>
+  </div>
+</header>

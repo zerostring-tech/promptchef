@@ -1,0 +1,14 @@
+[
+  {{- range $i, $page := .Site.RegularPages -}}
+  {{- if $i }},{{ end -}}
+  {
+    "title": {{ $page.Title | jsonify }},
+    "description": {{ $page.Description | jsonify }},
+    "url": {{ $page.RelPermalink | jsonify }},
+    "section": {{ $page.Section | jsonify }},
+    "tags": {{ $page.Params.tags | jsonify }},
+    "models": {{ $page.Params.models | jsonify }},
+    "difficulty": {{ $page.Params.difficulty | jsonify }}
+  }
+  {{- end -}}
+]

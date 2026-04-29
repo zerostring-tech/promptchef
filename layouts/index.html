@@ -1,0 +1,142 @@
+{{ define "main" }}
+{{ $prompts := where .Site.RegularPages "Section" "prompts" }}
+{{ $skills  := where .Site.RegularPages "Section" "skills" }}
+
+<section class="hero">
+  <div class="container">
+    <h1 class="hero-title">Find the perfect prompt. <span class="hero-accent">Instantly.</span></h1>
+    <p class="hero-subtitle">PromptChef is a community-driven library of AI prompts and skills — search, copy, and contribute.</p>
+    <div class="hero-search">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="hero-search" placeholder="Search prompts and skills..." aria-label="Search all content" autocomplete="off">
+    </div>
+    <div class="hero-actions">
+      <a href="{{ "/prompts/" | relURL }}" class="btn btn--primary">Browse Prompts</a>
+      <a href="{{ "/skills/" | relURL }}" class="btn btn--secondary">Explore Skills</a>
+    </div>
+  </div>
+</section>
+
+<section class="stats-bar">
+  <div class="container stats-inner">
+    <div class="stat"><strong>{{ len $prompts }}</strong> Prompts</div>
+    <div class="stat"><strong>{{ len $skills }}</strong> Skills</div>
+    <div class="stat"><strong>{{ len .Site.Taxonomies.tags }}</strong> Tags</div>
+  </div>
+</section>
+
+{{/* Hidden pool of all cards — searched by JS */}}
+<div id="search-pool" hidden>
+  {{ range $prompts }}
+  <div class="card-wrapper"
+       data-tags="{{ delimit (.Params.tags | default slice) "," }}"
+       data-title="{{ .Title | lower }}"
+       data-description="{{ .Description | lower }}"
+       data-section="{{ .Section }}">
+    {{ partial "card.html" . }}
+  </div>
+  {{ end }}
+  {{ range $skills }}
+  <div class="card-wrapper"
+       data-tags="{{ delimit (.Params.tags | default slice) "," }}"
+       data-title="{{ .Title | lower }}"
+       data-description="{{ .Description | lower }}"
+       data-section="{{ .Section }}">
+    {{ partial "card.html" . }}
+  </div>
+  {{ end }}
+</div>
+
+{{/* Search results — shown only while searching */}}
+<section id="search-results-section" class="section-latest" hidden>
+  <div class="container">
+    <div class="section-heading">
+      <h2>Search Results <span id="search-results-count" style="font-size:1rem;font-weight:400;color:var(--color-muted);"></span></h2>
+    </div>
+    <div class="card-grid" id="search-results-grid"></div>
+    <div id="search-no-results" class="no-results" hidden>
+      <p>No results found. <a href="{{ .Site.Params.github }}/issues/new">Request a prompt</a>?</p>
+    </div>
+  </div>
+</section>
+
+{{/* Default view — hidden while searching */}}
+<div id="default-content">
+  <section class="section-latest">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Latest Prompts</h2>
+        <a href="{{ "/prompts/" | relURL }}" class="see-all">See all &rarr;</a>
+      </div>
+      <div class="card-grid">
+        {{ range first 6 $prompts }}{{ partial "card.html" . }}{{ end }}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-latest section-latest--alt">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Latest Skills</h2>
+        <a href="{{ "/skills/" | relURL }}" class="see-all">See all &rarr;</a>
+      </div>
+      <div class="card-grid">
+        {{ range first 6 $skills }}{{ partial "card.html" . }}{{ end }}
+      </div>
+    </div>
+  </section>
+
+  <section class="contribute-cta">
+    <div class="container">
+      <h2>Contribute a Prompt or Skill</h2>
+      <p>Have a great prompt or skill? <br>Share it with the community by opening a pull request on GitHub.</p>
+      <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener" class="btn btn--primary">Contribute on GitHub</a>
+    </div>
+  </section>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+  const input       = document.getElementById('hero-search');
+  const pool        = document.getElementById('search-pool');
+  const resultsSection = document.getElementById('search-results-section');
+  const resultsGrid = document.getElementById('search-results-grid');
+  const resultsCount = document.getElementById('search-results-count');
+  const noResults   = document.getElementById('search-no-results');
+  const defaultContent = document.getElementById('default-content');
+  const allCards    = Array.from(pool.querySelectorAll('.card-wrapper'));
+
+  function search(query) {
+    const q = query.toLowerCase().trim();
+
+    if (!q) {
+      resultsSection.hidden = true;
+      defaultContent.hidden = false;
+      return;
+    }
+
+    resultsSection.hidden = false;
+    defaultContent.hidden = true;
+    resultsGrid.innerHTML = '';
+
+    const matches = allCards.filter(card =>
+      card.dataset.title.includes(q) ||
+      card.dataset.description.includes(q) ||
+      card.dataset.tags.toLowerCase().includes(q) ||
+      card.dataset.section.includes(q)
+    );
+
+    matches.forEach(card => resultsGrid.appendChild(card.cloneNode(true)));
+
+    resultsCount.textContent = matches.length
+      ? '(' + matches.length + ')'
+      : '';
+    noResults.hidden = matches.length > 0;
+  }
+
+  input.addEventListener('input', () => search(input.value));
+})();
+</script>
+{{ end }}

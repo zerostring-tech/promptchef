@@ -1,0 +1,169 @@
+{{ define "main" }}
+<div class="container">
+  <div class="list-header">
+    <h1 class="list-title">{{ .Title }}</h1>
+    {{ with .Description }}<p class="list-description">{{ . }}</p>{{ end }}
+  </div>
+
+  <div class="list-controls">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="search-input" placeholder="Search {{ .Title | lower }}..." aria-label="Search">
+    </div>
+    <div class="filter-group" id="tag-filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      {{ $tags := slice }}
+      {{ range .Pages }}
+        {{ range .Params.tags }}
+          {{ $tags = $tags | append . }}
+        {{ end }}
+      {{ end }}
+      {{ range ($tags | uniq | first 8) }}
+      <button class="filter-btn" data-filter="{{ . }}">{{ . }}</button>
+      {{ end }}
+    </div>
+  </div>
+
+  <div class="card-grid" id="card-grid">
+    {{ range .Pages }}
+    <div class="card-wrapper" data-tags="{{ delimit (.Params.tags | default slice) "," }}" data-title="{{ .Title | lower }}" data-description="{{ .Description | lower }}">
+      {{ partial "card.html" . }}
+    </div>
+    {{ end }}
+  </div>
+
+  <div id="no-results" class="no-results" hidden>
+    <p>No results found. <a href="{{ .Site.Params.github }}/issues/new">Request a prompt</a>?</p>
+  </div>
+
+  <nav class="pagination" id="pagination" aria-label="Page navigation"></nav>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+  const PER_PAGE = 12;
+
+  const input      = document.getElementById('search-input');
+  const grid       = document.getElementById('card-grid');
+  const noResults  = document.getElementById('no-results');
+  const pagination = document.getElementById('pagination');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+
+  const allCards   = Array.from(grid.querySelectorAll('.card-wrapper'));
+  let filtered     = allCards.slice();
+  let currentPage  = 1;
+  let activeFilter = 'all';
+
+  /* ---- filtering ---- */
+  function applyFilters() {
+    const q = input.value.toLowerCase().trim();
+    filtered = allCards.filter(card => {
+      const matchSearch = !q ||
+        card.dataset.title.includes(q) ||
+        card.dataset.description.includes(q) ||
+        card.dataset.tags.toLowerCase().includes(q);
+      const matchTag = activeFilter === 'all' ||
+        card.dataset.tags.split(',').map(t => t.trim()).includes(activeFilter);
+      return matchSearch && matchTag;
+    });
+    currentPage = 1;
+    render();
+  }
+
+  /* ---- pagination render ---- */
+  function render() {
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    currentPage = Math.min(currentPage, totalPages);
+    const start = (currentPage - 1) * PER_PAGE;
+    const end   = start + PER_PAGE;
+
+    allCards.forEach(c => { c.hidden = true; });
+    filtered.slice(start, end).forEach(c => { c.hidden = false; });
+
+    noResults.hidden = filtered.length > 0;
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    pagination.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const range = buildRange(currentPage, totalPages);
+
+    range.forEach(item => {
+      if (item === '…') {
+        const span = document.createElement('span');
+        span.className = 'page-ellipsis';
+        span.textContent = '…';
+        pagination.appendChild(span);
+        return;
+      }
+
+      const btn = document.createElement('button');
+      btn.className = 'page-btn' + (item === currentPage ? ' page-btn--active' : '');
+      btn.textContent = item;
+      btn.setAttribute('aria-label', 'Page ' + item);
+      if (item === currentPage) btn.setAttribute('aria-current', 'page');
+      btn.addEventListener('click', () => {
+        currentPage = item;
+        render();
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      pagination.appendChild(btn);
+    });
+
+    /* prev / next */
+    if (currentPage > 1) {
+      const prev = document.createElement('button');
+      prev.className = 'page-btn page-btn--nav';
+      prev.innerHTML = '&lsaquo; Prev';
+      prev.setAttribute('aria-label', 'Previous page');
+      prev.addEventListener('click', () => { currentPage--; render(); grid.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      pagination.insertBefore(prev, pagination.firstChild);
+    }
+    if (currentPage < totalPages) {
+      const next = document.createElement('button');
+      next.className = 'page-btn page-btn--nav';
+      next.innerHTML = 'Next &rsaquo;';
+      next.setAttribute('aria-label', 'Next page');
+      next.addEventListener('click', () => { currentPage++; render(); grid.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      pagination.appendChild(next);
+    }
+  }
+
+  /* produce page numbers with ellipsis: 1 … 4 5 6 … 12 */
+  function buildRange(cur, total) {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages = new Set([1, total, cur]);
+    for (let d = 1; d <= 2; d++) {
+      if (cur - d > 1) pages.add(cur - d);
+      if (cur + d < total) pages.add(cur + d);
+    }
+    const sorted = Array.from(pages).sort((a, b) => a - b);
+    const result = [];
+    sorted.forEach((p, i) => {
+      if (i > 0 && p - sorted[i - 1] > 1) result.push('…');
+      result.push(p);
+    });
+    return result;
+  }
+
+  /* ---- events ---- */
+  input.addEventListener('input', applyFilters);
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      applyFilters();
+    });
+  });
+
+  /* initial render */
+  render();
+})();
+</script>
+{{ end }}
