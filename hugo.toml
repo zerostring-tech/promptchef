@@ -1,11 +1,11 @@
-baseURL = "https://your-username.github.io/"
+baseURL = "https://promptchef.net/"
 languageCode = "en-us"
 title = "PromptChef"
 
 [params]
   description = "A community-driven library of AI prompts and skills"
   author = "PromptChef Community"
-  github = "https://github.com/your-username/promptchef"
+  github = "https://github.com/zerostring-tech/promptchef"
 
 [outputs]
   home = ["HTML", "JSON"]
