@@ -1,8 +1,8 @@
-# PromptChef 
+# PromptChef 🍳
 
 A community-driven library of AI prompts and skills, free and open source.
 
-**Live site:** https://promptchef.net/
+**Live site:** https://zerostring-tech.github.io/promptchef/
 
 ---
 
