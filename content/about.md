@@ -12,7 +12,7 @@ PromptChef is a free, open-source library of AI prompts and skills maintained by
 
 The goal is simple: make high-quality prompts and skills easy to find, copy, and contribute to.
 
-## How to Contribute 
+## How to Contribute
 
 Adding a prompt or skill is as easy as creating a markdown file and opening a pull request — no coding knowledge needed.
 
@@ -102,4 +102,4 @@ Individual prompts and skills carry their own license as specified in the `licen
 
 ## About ZeroString Tech Ventures
 
-PromptChef is created and maintained by **[ZeroString Tech Ventures](https://zerostring.tech)** as an open community project.  
+PromptChef is a community project created and maintained by **[ZeroString Tech Ventures](https://zerostring.tech)** as an open community project.  
