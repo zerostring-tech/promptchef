@@ -2,7 +2,7 @@
 
 A community-driven library of AI prompts and skills, free and open source.
 
-**Live site:** https://zerostring-tech.github.io/promptchef/
+**Live site:** https://promptchef.net
 
 ---
 
@@ -29,7 +29,7 @@ date: 2024-01-01
 description: "One sentence: what does this prompt do?"
 categories: ["writing"]
 tags: ["tag1", "tag2"]
-models: ["claude-3", "gpt-4"]
+models: ["claude", "gpt"]
 author: "your-github-username"
 license: "CC BY 4.0"
 source: ""
@@ -65,7 +65,7 @@ date: 2024-01-01
 description: "One sentence describing this technique."
 categories: ["prompting-technique"]
 tags: ["tag1", "tag2"]
-models: ["claude-3", "gpt-4"]
+models: ["claude", "gpt"]
 author: "your-github-username"
 license: "CC BY 4.0"
 source: ""
@@ -92,7 +92,7 @@ The skill prompt template here.
 
 - Test your prompt with at least one model before submitting
 - Keep descriptions specific — they power the search
-- No personal data in example outputs
+- No personal data or sensntive data in the prompts or skills file
 - If derived from another source, fill in the `source` field
 - Always specify a `license` — if unknown, write `"Unknown"`
 
@@ -110,4 +110,4 @@ Individual prompts and skills carry their own license as specified in the `licen
 
 ## About
 
-PromptChef is created and maintained by [ZeroString Tech Ventures](https://zerostring.tech) as an open community project.
+PromptChef is a community project created and maintained by [ZeroString Tech Ventures](https://zerostring.tech).
