@@ -1,4 +1,4 @@
-# PromptChef 🍳
+# PromptChef 
 
 A community-driven library of AI prompts and skills, free and open source.
 
